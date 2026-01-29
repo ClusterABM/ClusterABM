@@ -33,13 +33,12 @@ Create a `.env` file in the root directory:
 OPENAI_API_KEY=your_api_key_here
 ```
 
-### 3. Data Preparation
-```bash
-# Download datasets (instructions in data/README.md)
-cd data
-bash download_datasets.sh
-cd ..
-```
+### 3. Data Setup
+
+Place the Singapore COVID-19 dataset in `data/raw/`:
+- `singapore_covid19_cases.csv` (MOH case records)
+
+See `data/README.md` for data sources and preprocessing details.
 
 ## Repository Structure
 ```
@@ -47,74 +46,114 @@ cd ..
 ├── src/
 │   ├── clustering/          # ANCHOR implementation
 │   ├── agents/              # Meta, State, and Entity agents
-│   ├── models/              # Neural pathway (GNN-LSTM)
-│   ├── fusion/              # Epistemic fusion module
-│   └── utils/               # Data loaders, metrics
-├── experiments/
-│   ├── epidemiology/        # COVID-19 simulation
-│   ├── finance/             # Market sentiment diffusion
-│   └── social/              # Attention lifecycle
-├── data/                    # Datasets (see data/README.md)
-├── configs/                 # Experiment configurations
-├── results/                 # Output logs and figures
-└── environment.yml          # Conda environment
+│   ├── neural/              # Neural pathway (multimodal)
+│   ├── knowledge/           # Knowledge database for Agentic RAG
+│   └── simulation/          # GABM simulation setup
+├── config/                  # Configuration files
+├── data_processing/         # Data preprocessing utilities
+├── data/
+│   ├── raw/                 # Raw datasets
+│   ├── processed/           # Processed agent data
+│   └── results/             # Simulation outputs
+├── scripts/                 # Execution scripts (see below)
+├── environment.yml          # Conda environment
+└── .env                     # API keys (create this)
 ```
 
 ## Running Experiments
 
-### Epidemiology (Singapore COVID-19)
+### Complete Pipeline (Singapore COVID-19)
+
+Execute the following scripts in order:
+
+#### 1. Extract Agent Data
 ```bash
-python experiments/epidemiology/run_simulation.py \
-    --config configs/epidemiology.yaml \
-    --n_agents 1000 \
-    --n_clusters 4 \
-    --eval_mode rolling_window
+python scripts/extract_agent_data.py data/raw/singapore_covid19_cases.csv
 ```
+Processes MOH case records into agent profiles with demographics, contact networks, and infection timelines.
 
-### Finance (Market Sentiment)
+#### 2. Train Graph Embeddings
 ```bash
-python experiments/finance/run_simulation.py \
-    --config configs/finance.yaml \
-    --n_agents 100 \
-    --n_clusters 5 \
-    --eval_mode rolling_window
+python scripts/train_graphsage.py
 ```
+Trains GraphSAGE encoder on contact network structure and agent attributes.
 
-### Social Sciences (Attention Lifecycle)
+#### 3. Create Knowledge Base
 ```bash
-python experiments/social/run_simulation.py \
-    --config configs/social.yaml \
-    --n_agents 250 \
-    --n_clusters 3 \
-    --eval_mode rolling_window
+python scripts/create_knowledge_base.py
 ```
+Builds domain knowledge database for symbolic agents (policies, epidemiological rules, context).
 
-### Reproducing All Results
+#### 4. Collect Behavioral Traces
 ```bash
-# Run all experiments with default settings
-bash scripts/reproduce_all.sh
+python scripts/collect_reasoning_traces.py
+```
+Runs mini-simulations to collect agent reasoning traces for motif discovery.
 
-# Results will be saved to results/
+#### 5. ANCHOR Clustering
+```bash
+# Default clustering (4 clusters)
+python scripts/cluster_agents_hsbc.py --publication-quality
+
+# Custom parameters
+python scripts/cluster_agents_hsbc.py --k-fine 8 --k-motifs 20 --alpha 0.2 --gamma 0.6
+
+# Ablations
+python scripts/cluster_agents_hsbc.py --no-motifs        # Remove behavioral motifs
+python scripts/cluster_agents_hsbc.py --no-contrastive   # Remove anchor-guided learning
+python scripts/cluster_agents_hsbc.py --no-graph         # Remove graph structure
+```
+Executes ANCHOR clustering pipeline: spectral → motif discovery → anchor-guided refinement.
+
+#### 6. Train Neural Pathway
+```bash
+python scripts/train_neural_pathway.py
+```
+Trains multimodal neural transition model on historical data.
+
+#### 7. Run Simulation
+```bash
+python scripts/run_rolling_window_simulation.py
+```
+Executes rolling-window forecasting with epistemic fusion (28-day lookback, 7-day horizon).
+
+#### 8. Analyze Results
+```bash
+python scripts/analyze_results.py
+```
+Computes evaluation metrics (EETE, ET-F1, NLL, Brier) and generates performance tables.
+
+#### 9. Visualize Results
+```bash
+python scripts/visualize_epidemic.py
+```
+Generates trajectory plots, calibration curves, and cluster analyses.
+
+### Quick Reproduction
+```bash
+# Run complete pipeline
+bash scripts/run_all.sh
+
+# Results will be saved to data/results/
 ```
 
 ## Key Components
 
-### ANCHOR Clustering
-```bash
-# Run standalone ANCHOR clustering
-python src/clustering/run_anchor.py \
-    --dataset epidemiology \
-    --n_coarse_clusters 10 \
-    --n_final_clusters 4
-```
+### ANCHOR Clustering Options
 
-### Ablation Studies
+The clustering script supports multiple configurations:
 ```bash
-# Architecture ablation
-python experiments/ablation/architecture.py --config configs/ablation.yaml
+# Specify data source
+python scripts/cluster_agents_hsbc.py --data-source singapore
 
-# ANCHOR ablation
-python experiments/ablation/clustering.py --config configs/ablation.yaml
+# Adjust cluster granularity
+python scripts/cluster_agents_hsbc.py --k-fine 8  # Fine clusters (default: 4)
+
+# Modify motif discovery
+python scripts/cluster_agents_hsbc.py --k-motifs 20  # Behavioral motifs (default: 15)
+
+# Tune fusion weights
+python scripts/cluster_agents_hsbc.py --alpha 0.2 --gamma 0.6  # Network vs behavior
 ```
 
 ## Evaluation Metrics
@@ -130,24 +169,60 @@ Our evaluation focuses on event-time accuracy and calibration:
 
 - **GPU**: NVIDIA GPU with ≥16GB VRAM (tested on A100)
 - **RAM**: ≥32GB
-- **Storage**: ≥50GB for datasets and results
+- **Storage**: ≥20GB for datasets and results
 
 Experiments use asynchronous API calls (50 concurrent) to manage LLM inference latency.
 
 ## Expected Runtime
 
-- **Epidemiology** (N=1000, T=83): ~60 mins
-- **Finance** (N=100, T=184): ~35 mins
-- **Social** (N=250, T=90): ~40 mins
+**Singapore COVID-19 (N=1000, T=83)**:
+- Data extraction: ~2 mins
+- GraphSAGE training: ~5 mins
+- Knowledge base creation: ~3 mins
+- Reasoning traces: ~15 mins
+- ANCHOR clustering: ~10 mins
+- Neural training: ~8 mins
+- Simulation: ~60 mins
+- **Total**: ~103 mins
 
-Times reported for rolling-window evaluation with α=1.0.
+Times reported for rolling-window evaluation with α=1.0 on A100.
+
+## Configuration
+
+Edit `config/*.yaml` files to modify:
+- Agent population size
+- Cluster counts
+- Neural architecture
+- Simulation parameters
+- Evaluation protocols
+
+## Output Structure
+
+Results are organized in `data/results/`:
+```
+data/results/
+├── clusters/              # ANCHOR outputs
+│   ├── cluster_assignments.json
+│   ├── motif_profiles.pkl
+│   └── anchor_agents.json
+├── trajectories/          # Simulation outputs
+│   ├── seird_timeseries.csv
+│   └── transition_probabilities.pkl
+├── metrics/               # Evaluation results
+│   ├── rolling_window_metrics.csv
+│   └── calibration_data.pkl
+└── figures/               # Visualizations
+    ├── epidemic_trajectory.png
+    ├── cluster_analysis.png
+    └── calibration_plots.png
+```
 
 ## Citation
 ```bibtex
 @inproceedings{physicsagentabm2026,
   title={PhysicsAgentABM: Physics-Guided Generative Agent-Based Modeling},
   author={Anonymous Authors},
-  booktitle={International Conference on Machine Learning (ICML)},
+  booktitle={},
   year={2026}
 }
 ```
@@ -158,4 +233,4 @@ For questions regarding code or experiments, please open an issue or contact: `a
 
 ## License
 
-This code is released for review purposes only. License details will be provided upon acceptance.
+This code is released for review purposes only. License details will be provided upon acceptance. 
