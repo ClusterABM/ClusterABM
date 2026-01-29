@@ -92,8 +92,7 @@ Runs mini-simulations to collect agent reasoning traces for motif discovery.
 
 #### 5. ANCHOR Clustering
 ```bash
-# Default clustering (4 clusters)
-python scripts/cluster_agents_hsbc.py --publication-quality
+python scripts/cluster_agents_hsbc.py
 
 # Custom parameters
 python scripts/cluster_agents_hsbc.py --k-fine 8 --k-motifs 20 --alpha 0.2 --gamma 0.6
