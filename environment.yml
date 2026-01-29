@@ -1,0 +1,27 @@
+name: epidemic-reasoning
+channels:
+  - pytorch
+  - nvidia
+  - pyg
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - numpy>=1.24.0
+  - pandas>=2.0.0
+  - networkx>=3.0
+  - scipy>=1.10.0
+  - scikit-learn>=1.3.0
+  - matplotlib>=3.7.0
+  - seaborn>=0.12.0
+  - tqdm>=4.65.0
+  - pytorch>=2.0.0
+  - pytorch-cuda=11.8 # Adjust based on your server's CUDA version
+  - pyg  # This installs torch-geometric via the pyg channel
+  - pip:
+      - openai>=1.0.0
+      - python-dotenv>=1.0.0
+      - plotly>=5.14.0
+      - chromadb
+      - sentence-transformers
