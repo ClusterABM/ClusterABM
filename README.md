@@ -1,6 +1,5 @@
 # PhysicsAgentABM: Physics-Guided Generative Agent-Based Modeling
 
-**ICML 2026 Submission - Code Repository**
 
 This repository contains the implementation of PhysicsAgentABM, a hierarchical neuro-symbolic framework for scalable and calibrated agent-based modeling with LLMs, and ANCHOR, a novel LLM-agent-driven clustering mechanism.
 
@@ -215,20 +214,6 @@ data/results/
     ├── cluster_analysis.png
     └── calibration_plots.png
 ```
-
-## Citation
-```bibtex
-@inproceedings{physicsagentabm2026,
-  title={PhysicsAgentABM: Physics-Guided Generative Agent-Based Modeling},
-  author={Anonymous Authors},
-  booktitle={},
-  year={2026}
-}
-```
-
-## Contact
-
-For questions regarding code or experiments, please open an issue or contact: `anon.email@domain.com`
 
 ## License
 
