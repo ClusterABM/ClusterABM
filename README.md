@@ -1,11 +1,11 @@
-# PhysicsAgentABM: Physics-Guided Generative Agent-Based Modeling
+# ClusterABM: Scalable Agent-Based Modeling under Partial Observability via Cluster-Level Inference
 
 
-This repository contains the implementation of PhysicsAgentABM, a hierarchical neuro-symbolic framework for scalable and calibrated agent-based modeling with LLMs, and ANCHOR, a novel LLM-agent-driven clustering mechanism.
+This repository contains the implementation of ClusterABM, a hierarchical neuro-symbolic framework for scalable and calibrated agent-based modeling with LLMs, and ANCHOR, a novel LLM-agent-driven clustering mechanism.
 
 ## Overview
 
-PhysicsAgentABM shifts inference from individual agents to adaptive agent clusters, combining:
+ClusterABM shifts inference from individual agents to adaptive agent clusters, combining:
 - **Symbolic reasoning** via state-specialized agents and meta-agents
 - **Neural transition models** for temporal and interaction dynamics
 - **Uncertainty-aware epistemic fusion** for calibrated predictions
