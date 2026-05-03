@@ -1,11 +1,11 @@
-# ClusterABM: Scalable Agent-Based Modeling under Partial Observability via Cluster-Level Inference
+# Mechanism-Guided Generative Agent-Based Modeling
 
 
-This repository contains the implementation of ClusterABM, a hierarchical neuro-symbolic framework for scalable and calibrated agent-based modeling with LLMs, and ANCHOR, a novel LLM-agent-driven clustering mechanism.
+This repository contains the implementation of a hierarchical neuro-symbolic framework for scalable and calibrated agent-based modeling with LLMs, and ANCHOR, a novel LLM-agent-driven clustering mechanism.
 
 ## Overview
 
-ClusterABM shifts inference from individual agents to adaptive agent clusters, combining:
+Our approach shifts inference from individual agents to adaptive agent clusters, combining:
 - **Symbolic reasoning** via state-specialized agents and meta-agents
 - **Neural transition models** for temporal and interaction dynamics
 - **Uncertainty-aware epistemic fusion** for calibrated predictions
