@@ -5,6 +5,8 @@ This repository contains the implementation of a hierarchical neuro-symbolic fra
 
 ## Overview
 
+<img src="images/abm-main.png" width="1000">
+
 Our approach shifts inference from individual agents to adaptive agent clusters, combining:
 - **Symbolic reasoning** via state-specialized agents and meta-agents
 - **Neural transition models** for temporal and interaction dynamics
