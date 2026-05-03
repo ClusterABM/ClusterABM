@@ -5,6 +5,8 @@ This repository contains the implementation of a hierarchical neuro-symbolic fra
 
 ## Overview
 
+
+Inference is performed at the cluster level via combined symbolic and neural pathways, followed by stochastic agent-level realization.
 <img src="images/abm-main.png" width="1000">
 
 Our approach shifts inference from individual agents to adaptive agent clusters, combining:
